@@ -158,7 +158,7 @@ console.log(basketDetails, "basketDetails");
       navigate("/view-basket");
     } else if (action === "edit") {
       // update required: make the route name better
-      navigate("/add-edit-product", { state: id });
+      navigate("/add-new-basket", { state: id });
     } else if (action === "delete") {
       toggleModal();
       setItemToDelete(id);
@@ -177,7 +177,7 @@ console.log(basketDetails, "basketDetails");
             handleFilterChange={handleFilterChange}
           >
             <CommonButton
-              text="Categories"
+              text="Export"
               onClick={() => navigate("/categories")}
               type="button"
               className="grey_btn"
