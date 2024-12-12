@@ -16,7 +16,7 @@ const SingleProductTableRow = ({
   // const { id, name, product_detail, category, status } = data;
   // const {id , basket_name,space_left,products_detail,price, offer ,date}
 
-  console.log(data, "data");
+  console.log(data, "datayyyyyyyyyyyyyyy");
 
   return (
     <tr className=" border border-gray-400 ">

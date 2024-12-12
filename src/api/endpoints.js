@@ -1,5 +1,5 @@
 export const CATEGORIES_ENDPOINT = "/categories/";
-export const PRODUCT_ENDPOINT = "/products/";
+export const PRODUCT_ENDPOINT = "/productslist/";
 export const RAW_MATERIAL_ENDPOINT = "/product-material/";
 export const TODO_ENDPOINT = "/todos/tasks/";
 export const REFRESH_TOKEN = "/token/refresh";

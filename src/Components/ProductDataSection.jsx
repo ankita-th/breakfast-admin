@@ -1,8 +1,8 @@
 import React from "react";
 import TabListing from "./TabListing";
 import InventoryTab from "./InventoryTab";
-import VariationTab from "./VariationTab";
 import AdvancedTab from "./AdvancedTab";
+import VariantsTab from "./VariationTab";
 
 const TABS = [
   { label: "Inventory", value: "inventory" },
@@ -10,32 +10,53 @@ const TABS = [
   { label: "Advanced", value: "advanced" },
 ];
 
-const ProductDataSection = ({ formConfig, activeTab, handleActiveTab }) => {
-  const renderActiveTab = () => {
-    switch (activeTab) {
-      case "inventory":
-        return <InventoryTab formConfig={formConfig} />;
-      case "variations":
-        return <VariationTab formConfig={formConfig} />;
-      case "advanced":
-        return <AdvancedTab formConfig={formConfig} />;
-    }
-  };
-
+const ProductDataSection = ({
+  formConfig,
+  activeTab,
+  handleActiveTab,
+  disabled = false,
+}) => {
+  // const renderActiveTab = () => {
+  //   switch (activeTab) {
+  //     case "inventory":
+  //       return <InventoryTab formConfig={formConfig} disabled={disabled} />;
+  //     case "variations":
+  //       return <VariantsTab formConfig={formConfig} disabled={disabled} />;
+  //     case "advanced":
+  //       return <AdvancedTab formConfig={formConfig} disabled={disabled} />;
+  //   }
+  // };
   return (
-    <div className="product-data-section">
-      <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md">
+    <div className="product-data-section border">
+      <div className="w-full mx-auto p-4 bg-white rounded-lg">
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           Product Data
         </h2>
-    
-        <div className="flex space-x-6">
+
+        <div className="flex space-x-4">
           <TabListing
             tabs={TABS}
             handleActiveTab={handleActiveTab}
             activeTab={activeTab}
           />
-          {renderActiveTab()}
+          {/* {renderActiveTab()} */}
+          <div
+            className={`inventory ${activeTab == "inventory" ? "" : "hidden"}`}
+          >
+            <InventoryTab formConfig={formConfig} disabled={disabled} />
+          </div>
+          <div
+            className={`variations ${
+              activeTab === "variations" ? "" : "hidden"
+            }`}
+          >
+            <VariantsTab formConfig={formConfig} disabled={disabled} />
+          </div>
+          <div
+            className={`advanced ${activeTab === "advanced" ? "" : "hidden"}`}
+          >
+            <AdvancedTab formConfig={formConfig} disabled={disabled} />
+          </div>
         </div>
       </div>
     </div>
