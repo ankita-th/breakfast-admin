@@ -1,6 +1,6 @@
 import { cleanFilters } from "../utils/helpers";
 import { authAxios, authorizeAxios, authorizeFileInstance } from "./apiConfig";
-import { PRODUCT_ENDPOINT } from "./endpoints";
+import { GET_PRODUCT_ENDPOINT, PRODUCT_ENDPOINT } from "./endpoints";
 
 export const login = (payload) => {
   return authAxios.post("/login/", payload);
@@ -10,7 +10,7 @@ export const login = (payload) => {
 export const getProducts = (filters) => {
   // for removing filter keys from an object whose values are empty and further implementing encodingURIComponent
   const cleanedFilters = cleanFilters(filters);
-  return authorizeAxios.get(PRODUCT_ENDPOINT, { params: cleanedFilters });
+  return authorizeAxios.get(GET_PRODUCT_ENDPOINT, { params: cleanedFilters });
 };
 
 export const deleteProduct = (id) => {

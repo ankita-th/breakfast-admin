@@ -3,7 +3,13 @@ import { useForm } from "react-hook-form";
 import { INSTANCE, makeApiRequest, METHODS } from "../api/apiFunctions";
 import { CATEGORIES_ENDPOINT, SUBCATEGORY_ENDPOINT } from "../api/endpoints";
 import { successType, toastMessage } from "../utils/toastMessage";
-import { DEFAULT_ERROR_MESSAGE, ITEMS_PER_PAGE, OPTIONS } from "../constant";
+import {
+  ACTIONS,
+  DEFAULT_ERROR_MESSAGE,
+  ITEMS_PER_PAGE,
+  OPTIONS,
+  TYPE_OPTIONS,
+} from "../constant";
 import useLoader from "../hooks/useLoader";
 import usePagination from "../hooks/usePagination";
 import TableWrapper from "../Wrappers/TableWrapper";
@@ -18,6 +24,7 @@ import CommonButton from "../Components/Common/CommonButton";
 import AddEditCategorySection from "../Components/AddEditCategorySection";
 import PageLoader from "../loaders/PageLoader";
 const CATEGORY_PAGE_COLUMNS = [
+  "checkbox",
   "", // for image section
   "Name",
   "Slug",
@@ -38,14 +45,14 @@ const DEFAULT_CATEGORY_VALUES = {
 const filterFields = [
   {
     type: "select",
-    defaultOption: "All",
-    options: OPTIONS,
+    defaultOption: "select_type",
+    options: TYPE_OPTIONS,
     filterName: "type",
   },
   {
     type: "select",
     defaultOption: "Select Action",
-    options: OPTIONS,
+    options: ACTIONS,
     filterName: "action",
   },
   {
@@ -95,7 +102,9 @@ const Categories = () => {
 
   useEffect(() => {
     fetchData();
-  }, [filters, page]);
+  }, [page]);
+  // commented for future use
+  // }, [filters, page]);
 
   const fetchData = () => {
     toggleLoader("pageLoader");
@@ -187,9 +196,9 @@ const Categories = () => {
   };
 
   const handleAddEditCategory = (values, event) => {
-    if (file.error) {
-      return;
-    }
+    // if (file?.error) {
+    //   return;
+    // }
     const { isEdit, item, type } = editCategoryInfo;
     const buttonType = event.nativeEvent.submitter.name;
 
@@ -201,7 +210,6 @@ const Categories = () => {
     const payload = {
       name: values.name,
       slug: values.slug,
-      // category_image: file.file,
       description: values.description,
       is_active: buttonType === "publish",
     };
@@ -221,6 +229,7 @@ const Categories = () => {
     }
 
     const data = Object.fromEntries(formData.entries()); // Convert to object
+    const isSubCategory = values?.parent;
     makeApiRequest({
       endPoint: manageApiEndpoint(),
       method: isEdit ? METHODS?.patch : METHODS?.post,
@@ -231,21 +240,35 @@ const Categories = () => {
     })
       .then((res) => {
         toastMessage(
-          `${type === "subcategory" ? "Subcategory" : "Category"} ${
-            isEdit ? "updated" : "added"
-          } sucessfully`,
+          `${
+            isSubCategory
+              ? "Subcategory"
+              : type === "subcategory"
+              ? "Subcategory"
+              : "Category"
+          } ${isEdit ? "updated" : "added"} sucessfully`,
           successType
         );
         fetchData();
-      })
-      .catch((err) => {
-        toastMessage(handleCategoryErrorToast(err));
-      })
-      .finally(() => {
         setBtnLoaders({ publish: false, draft: false });
         handleCategoryModal({ action: "close" });
         reset();
         setFile(null);
+      })
+      .catch((err) => {
+        const fieldError =
+          err?.response?.data?.name?.[0] || err?.response?.data?.slug?.[0];
+        console.log(fieldError);
+        if (fieldError) {
+          toastMessage(fieldError);
+        } else {
+          toastMessage(handleCategoryErrorToast(err));
+          fetchData();
+          handleCategoryModal({ action: "close" });
+          reset();
+          setFile(null);
+        }
+        setBtnLoaders({ publish: false, draft: false });
       });
   };
 
@@ -285,7 +308,7 @@ const Categories = () => {
             handleFilterChange={handleFilterChange}
           >
             <CommonButton
-              text="Add Category"
+              text="Add Category/SubCategory"
               // may be need to change this action from here to somewhere else
               onClick={() => {
                 handleCategoryModal({ action: "open" });
@@ -318,6 +341,7 @@ const Categories = () => {
             onPageChange={onPageChange}
             itemsPerPage={ITEMS_PER_PAGE}
             totalData={totalData}
+            currentPage={page}
           />
           {showModal && (
             <DeleteConfirmationModal

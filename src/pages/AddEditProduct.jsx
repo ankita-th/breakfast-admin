@@ -29,7 +29,7 @@ import {
   PNG_AND_JPG,
 } from "../constant";
 import { INSTANCE, makeApiRequest, METHODS } from "../api/apiFunctions";
-import { PRODUCT_ENDPOINT } from "../api/endpoints";
+import { GET_PRODUCT_ENDPOINT, PRODUCT_ENDPOINT } from "../api/endpoints";
 import { successType, toastMessage } from "../utils/toastMessage";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SPECIAL_CHARACTERS_REGEX } from "../regex/regex";
@@ -106,7 +106,7 @@ const AddEditProduct = () => {
     if (editId) {
       toggleLoader("pageLoader");
       makeApiRequest({
-        endPoint: `${PRODUCT_ENDPOINT}${editId}`,
+        endPoint: `${GET_PRODUCT_ENDPOINT}${editId}`,
         method: METHODS.get,
       })
         .then((res) => {

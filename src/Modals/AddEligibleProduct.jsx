@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { INSTANCE, makeApiRequest, METHODS } from "../api/apiFunctions";
-import { CATEGORIES_ENDPOINT, PRODUCT_ENDPOINT } from "../api/endpoints";
+import { CATEGORIES_ENDPOINT, GET_PRODUCT_ENDPOINT, PRODUCT_ENDPOINT } from "../api/endpoints";
 import { baseURL } from "../api/apiConfig";
 import basketImg from "../assets/images/cookie_img.png";
 import CommonButton from "../Components/Common/CommonButton";
@@ -16,7 +16,7 @@ function AddEligibleProduct({ onClose, onSelect }) {
   console.log(selectedCategory, "selectedCategory");
   useEffect(() => {
     makeApiRequest({
-      endPoint: PRODUCT_ENDPOINT,
+      endPoint: GET_PRODUCT_ENDPOINT,
       method: METHODS.get,
     })
       .then((res) => {
@@ -56,7 +56,7 @@ function AddEligibleProduct({ onClose, onSelect }) {
     setSelectedCategory(category);
     if (category === "All") {
       makeApiRequest({
-        endPoint: PRODUCT_ENDPOINT,
+        endPoint: GET_PRODUCT_ENDPOINT,
         method: METHODS.get,
         instanceType: INSTANCE.authorized,
       })

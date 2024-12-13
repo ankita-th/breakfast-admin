@@ -1,6 +1,10 @@
 import React from "react";
 import { editIcon, eyeIcon, trashIcon } from "../assets/Icons/Svg";
-import { formatDate, listCategories, renderSerialNumber } from "../utils/helpers";
+import {
+  formatDate,
+  listCategories,
+  renderSerialNumber,
+} from "../utils/helpers";
 import { ITEMS_PER_PAGE } from "../constant";
 import Checkbox from "./Common/Checkbox";
 import moment from "moment";
@@ -36,7 +40,9 @@ const SingleProductTableRow = ({
       </td>
       {page === "basket" ? (
         <td className="py-2 px-4 border-0 bg-white text-nowrap">
-          {data?.products_detail?.length > 0 ? `${data?.products_detail?.length} Products` : "Not Added"}
+          {data?.products_detail?.length > 0
+            ? `${data?.products_detail?.length} Products`
+            : "Not Added"}
         </td>
       ) : null}
       {/* <td
@@ -55,15 +61,17 @@ const SingleProductTableRow = ({
       <td className="py-2 px-4 border-0 bg-white">
         {/* {listCategories(data.category)} */}
         <div>
-          {
-            data.offer ? 
+          {data.offer ? (
             <div>
               <div>${data?.offer?.offer_price}</div>
-              <div className="text-nowrap">{`${formatDate(data?.offer?.start_offer,"DD-MM-YY")} to ${formatDate(data?.offer?.end_offer,"DD-MM-YY")}`}</div>
-              
-            </div> : 
+              <div className="text-nowrap">{`${formatDate(
+                data?.offer?.start_offer,
+                "DD-MM-YY"
+              )} to ${formatDate(data?.offer?.end_offer, "DD-MM-YY")}`}</div>
+            </div>
+          ) : (
             <div>No offer</div>
-          }
+          )}
         </div>
       </td>
       <td className="py-2 px-4 border-0 bg-white text-nowrap">{data?.date}</td>
@@ -75,12 +83,12 @@ const SingleProductTableRow = ({
         {data.status}
       </td>
       <td className="py-2 px-4 border-0 space-x-2 bg-white rounded-tr-[10px] rounded-br-[10px] text-nowrap">
-        <button
+        {/* <button
           className="text-blue-500 hover:text-blue-700"
           onClick={() => handleActions("view",data.id)}
         >
           {eyeIcon}
-        </button>
+        </button> */}
         <button
           onClick={() => handleActions("edit", data.id)}
           className="text-blue-500 hover:text-blue-700"
