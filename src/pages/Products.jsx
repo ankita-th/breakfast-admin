@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import FilterSection from "../Components/Common/FilterSection";
-import { deleteProduct, getProducts, makeApiRequest, METHODS } from "../api/apiFunctions";
+import { deleteProduct, getProducts } from "../api/apiFunctions";
 import usePagination from "../hooks/usePagination";
 import Pagination from "../Components/Common/Pagination";
 import {
   DEFAULT_ERROR_MESSAGE,
   ITEMS_PER_PAGE,
+  ACTIONS,
+  TYPE_OPTIONS,
 } from "../constant";
 import CommonButton from "../Components/Common/CommonButton";
 import useModalToggle from "../hooks/useModalToggle";
@@ -20,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import TableWrapper from "../Wrappers/TableWrapper";
 import { deleteItemBasedOnId } from "../utils/helpers";
 import SingleProductTableRow from "../Components/SingleProductTableRow";
-import { DASHBOARD_ENDPOINT } from "../api/endpoints";
+import { T } from "../utils/languageTranslator";
 
 const OPTIONS = [
   { value: "Option1", label: "Option1" },
@@ -38,42 +40,43 @@ const OPTIONS = [
 //   { label: "Date", key: "" },
 //   { label: "Action", key: "projectStatus" },
 // ];
+
 const PRODUCT_PAGE_COLUMNS = [
   "checkbox",
-  "S.no",
-  "Name",
-  "SKU",
-  "Stock",
-  "Price",
-  "Category",
-  "Date",
-  "Action",
+  T["s_no"],
+  T["name"],
+  T["sku"],
+  T["stock"],
+  T["price"],
+  T["category"],
+  T["date"],
+  T["action"],
   // this extra space is for view ,edit  and delete actions button they do not have any column headings
   "",
 ];
 const filterFields = [
   {
     type: "select",
-    defaultOption: "All",
-    options: OPTIONS,
+    defaultOption: T["select_type"],
+    options: TYPE_OPTIONS,
     filterName: "type",
   },
+  // {
+  //   type: "select",
+  //   defaultOption: "Select Category",
+  //   options: PRODUCT_ACTIONS,
+  //   filterName: "category",
+  // },
   {
     type: "select",
-    defaultOption: "Select Category",
-    options: OPTIONS,
-    filterName: "category",
-  },
-  {
-    type: "select",
-    defaultOption: "Select Action",
-    options: OPTIONS,
+    defaultOption: T["select_action"],
+    options: ACTIONS,
     filterName: "action",
   },
   {
     type: "search",
     filterName: "name",
-    placeholder: "Search Product",
+    placeholder: T["search_product"],
   },
 ];
 const Products = () => {
@@ -85,7 +88,6 @@ const Products = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [totalData, setTotalData] = useState();
   const [deleteLoader, setDeleteLoader] = useState(false);
-  const [productId, setProductId] = useState(null);
   const [filters, setFilters] = useState({
     type: "",
     category: "",
@@ -101,12 +103,15 @@ const Products = () => {
     toggleLoader("pageLoader");
     getProducts(apiFilters)
       .then((res) => {
-        setProducts(res?.data?.results);
+        console.log(res,'sjdkfksdfsdjfklsdjfksdjkfsldjflds')
+        setProducts(res?.data);
         setTotalData(res?.data?.count);
       })
       .catch((err) => console.log(err))
       .finally(() => toggleLoader("pageLoader"));
-  }, [filters, page]);
+  }, [page]);
+  // commented for future use
+  // }, [filters, page]);
 
   const handleFilterChange = (filterName, value) => {
     const temp = { ...filters };
@@ -117,53 +122,39 @@ const Products = () => {
     navigate("/categories");
   };
 
-  console.log(productId, "productId");
-
   const handleDeleteProduct = () => {
     setDeleteLoader((prev) => true);
-    // deleteProduct(itemToDelete)
-    //   .then((res) => {
-    //     toastMessage("Product deleted successfully", successType);
-    //     setProducts(deleteItemBasedOnId(products, itemToDelete));
-    //   })
-    //   .catch((err) => {
-    //     toastMessage(err?.response?.data?.error || DEFAULT_ERROR_MESSAGE);
-    //   })
-    //   .finally(() => {
-    //     toggleModal();
-    //    setItemToDelete(null);
-    //     setDeleteLoader((prev) => false);
-    //   });
-
-      makeApiRequest({
-        endPoint:  `/products/${productId}/delete-product`,
-        method: METHODS.delete,
+    deleteProduct(itemToDelete)
+      .then((res) => {
+        toastMessage("Product deleted successfully", successType);
+        setProducts(deleteItemBasedOnId(products, itemToDelete));
       })
-        .then((res) => {
-          console.log(res.data, "f");
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {});
+      .catch((err) => {
+        toastMessage(err?.response?.data?.error || DEFAULT_ERROR_MESSAGE);
+      })
+      .finally(() => {
+        toggleModal();
+        setItemToDelete(null);
+        setDeleteLoader((prev) => false);
+      });
   };
 
   const handleActions = (action, id) => {
-    console.log(action, id, "action,id");
     if (action === "view") {
+      navigate("/view-product", { state: { id: id, isViewOnly: true } });
     } else if (action === "edit") {
       // update required: make the route name better
-      navigate("/add-edit-product", { state: id });
+      navigate("/add-edit-product", { state: { id: id } });
     } else if (action === "delete") {
-      setProductId(id);
       toggleModal();
       setItemToDelete(id);
     }
   };
 
+  console.log(products,"productessdsdfdsdfdsfdsfsdfsdfsdf");
+
   return (
     <>
-      {/* update required : depending on the css of the loader make sure we have to show other data or not */}
       {pageLoader ? (
         <PageLoader />
       ) : (
@@ -207,6 +198,7 @@ const Products = () => {
             onPageChange={onPageChange}
             itemsPerPage={ITEMS_PER_PAGE}
             totalData={totalData}
+            currentPage={page}
           />
         </div>
       )}
@@ -220,7 +212,7 @@ const Products = () => {
             toggleModal();
           }}
           onDelete={handleDeleteProduct}
-          deleteLoader={deleteLoader}
+          loader={deleteLoader}
         />
       )}
     </>

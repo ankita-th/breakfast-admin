@@ -264,3 +264,31 @@ export const convertSelectOptionToValue = (option, extractFrom = "value") => {
 export const combineBarcode = (from, to) => {
   return `${from}-${to}`;
 }
+
+export const convertValuesIntoLabelAndValue = (data) => {
+  if (data?.length) {
+    const result = [];
+    data.forEach((curElem) => {
+      const item = { label: curElem, value: curElem };
+      result.push(item);
+    });
+    return result;
+  }
+};
+
+export const createVariantPayload = (values) => {
+  if (values?.variants?.length) {
+    const temp = [...values.variants];
+    const result = [];
+    temp.forEach((curElem) => {
+      const item = {
+        ...curElem,
+        allow_backorders: curElem?.allow_backorders.value,
+        unit: curElem?.unit?.value,
+        quantity: +curElem?.quantity,
+      };
+      result.push(item);
+    });
+    return result;
+  }
+};

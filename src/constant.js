@@ -1,3 +1,5 @@
+import { T } from "./utils/languageTranslator";
+
 export const RAW_MATERIALS_ITEMS_PER_PAGE = 10;
 export const TODO_ITEMS_PER_PAGE = 10;
 export const CONFIGURATION_ITEMS_PER_PAGE = 10;
@@ -611,4 +613,29 @@ export const COMBINATION_OPTIONS = [
 export const APPLIES_TO_OPTIONS = [
   { label: "All Collections", value: "all_products" },
   { label: "Specific Collections", value: "specific_products" },
+];
+
+export const BACKDOOR_OPTIONS = [
+  {
+    label: "Allow ",
+    value: "allow",
+  },
+  {
+    label: "Do Not Allow",
+    value: "Do Not Allow",
+  },
+];
+
+export const PNG_AND_JPG = "image/png, image/jpeg";
+
+export const ACTIONS = [
+  { label: T["duplicate"], value: "duplicate" },
+  { label: T["delete"], value: "delete" },
+  { label: T["draft"], value: "draft" },
+];
+
+export const TYPE_OPTIONS = [
+  { label: T["published"], value: "published" },
+  { label: T["draft"], value: "draft" },
+  { label: T["all"], value: "all" },
 ];

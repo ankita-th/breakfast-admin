@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CommonSelect from "../../Form Fields/CommonSelect";
 import { APPLIES_TO_OPTIONS } from "../../constant";
 import { INSTANCE, makeApiRequest, METHODS } from "../../api/apiFunctions";
-import { PRODUCT_ENDPOINT } from "../../api/endpoints";
+import { GET_PRODUCT_ENDPOINT, PRODUCT_ENDPOINT } from "../../api/endpoints";
 
 const AppliesTo = ({ formConfig }) => {
   const { watch } = formConfig;
@@ -15,7 +15,7 @@ const AppliesTo = ({ formConfig }) => {
       name: productName,
     };
     makeApiRequest({
-      endPoint: PRODUCT_ENDPOINT    ,
+      endPoint: GET_PRODUCT_ENDPOINT,
       method: METHODS.get,
       instanceType: INSTANCE.authorized,
       params: apiParams,

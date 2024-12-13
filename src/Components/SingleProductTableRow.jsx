@@ -1,8 +1,13 @@
 import React from "react";
 import { editIcon, eyeIcon, trashIcon } from "../assets/Icons/Svg";
-import { listCategories, renderSerialNumber } from "../utils/helpers";
+import {
+  formatDate,
+  listCategories,
+  renderSerialNumber,
+} from "../utils/helpers";
 import { ITEMS_PER_PAGE } from "../constant";
 import Checkbox from "./Common/Checkbox";
+import moment from "moment";
 
 const SingleProductTableRow = ({
   data,
@@ -15,7 +20,7 @@ const SingleProductTableRow = ({
   // const { id, name, product_detail, category, status } = data;
   // const {id , basket_name,space_left,products_detail,price, offer ,date}
 
-  console.log(data, "data");
+  console.log(data, "datayyyyyyyyyyyyyyy");
 
   return (
     <tr className=" border border-gray-400 ">
@@ -31,29 +36,45 @@ const SingleProductTableRow = ({
       <td className="py-2 px-4 border-0 bg-white ">
         {page === "basket"
           ? data.space_left
-          : data.product_detail?.inventory?.sku}
+          : data.products_detail?.inventory?.sku}
       </td>
       {page === "basket" ? (
-        <td className="py-2 px-4 border-0 bg-white ">
-          {data?.product_detail?.length}
+        <td className="py-2 px-4 border-0 bg-white text-nowrap">
+          {data?.products_detail?.length > 0
+            ? `${data?.products_detail?.length} Products`
+            : "Not Added"}
         </td>
       ) : null}
-      <td
+      {/* <td
         className={`py-2 px-4 border-0 bg-white  ${
           data.status === "available" ? "text-green-500" : "text-red-500"
         }`}
       >
-        {/* {status} */}
-      </td>
+        {status}
+      </td> */}
       <td className="py-2 px-4 border-0 bg-white">
+        $
         {page === "basket"
-          ? data.basket_price
+          ? data.price
           : data.product_detail?.inventory?.regular_price}
       </td>
       <td className="py-2 px-4 border-0 bg-white">
-        {listCategories(data.category)}
+        {/* {listCategories(data.category)} */}
+        <div>
+          {data.offer ? (
+            <div>
+              <div>${data?.offer?.offer_price}</div>
+              <div className="text-nowrap">{`${formatDate(
+                data?.offer?.start_offer,
+                "DD-MM-YY"
+              )} to ${formatDate(data?.offer?.end_offer, "DD-MM-YY")}`}</div>
+            </div>
+          ) : (
+            <div>No offer</div>
+          )}
+        </div>
       </td>
-      <td className="py-2 px-4 border-0 bg-white">Product Date</td>
+      <td className="py-2 px-4 border-0 bg-white text-nowrap">{data?.date}</td>
       <td
         className={`py-2 px-4 border-0 bg-white  ${
           data.status === "available" ? "text-green-500" : "text-gray-500"
@@ -61,13 +82,13 @@ const SingleProductTableRow = ({
       >
         {data.status}
       </td>
-      <td className="py-2 px-4 border-0 space-x-2 bg-white rounded-tr-[10px] rounded-br-[10px]">
-        <button
+      <td className="py-2 px-4 border-0 space-x-2 bg-white rounded-tr-[10px] rounded-br-[10px] text-nowrap">
+        {/* <button
           className="text-blue-500 hover:text-blue-700"
           onClick={() => handleActions("view",data.id)}
         >
           {eyeIcon}
-        </button>
+        </button> */}
         <button
           onClick={() => handleActions("edit", data.id)}
           className="text-blue-500 hover:text-blue-700"
