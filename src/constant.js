@@ -319,10 +319,19 @@ export const DUMMY_EMPLOYEE_DATA = [
     status: true,
   },
 ];
+// export const MEASURE_OPTIONS = [
+//   { label: "Kilogram", value: "kg" },
+//   { label: "Gram", value: "g" },
+//   { label: "Litre", value: "kg" },
+// ];
+
 export const MEASURE_OPTIONS = [
   { label: "Kilogram", value: "kg" },
   { label: "Gram", value: "g" },
-  { label: "Litre", value: "kg" },
+  // uncomment after it get's fixed from backend
+  // { label: "Litre", value: "ltr" },
+  // { label: "Mili Litre", value: "ml" },
+  // { label: "Pound", value: "lb" },
 ];
 
 export const INVENTORY_PAGE_COLUMNS = [
@@ -639,3 +648,5 @@ export const TYPE_OPTIONS = [
   { label: T["draft"], value: "draft" },
   { label: T["all"], value: "all" },
 ];
+
+
