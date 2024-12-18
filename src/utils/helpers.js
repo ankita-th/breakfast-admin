@@ -1,5 +1,8 @@
 import moment from "moment";
-const base_url = "http://192.168.1.86:8000";
+import { MEASURE_OPTIONS } from "../constant";
+
+// const base_url = "http://192.168.1.86:8000";
+const base_url = import.meta.env.VITE_APP_BASE_URL
 const routeTitles = {
   "/dashboard": "Welcome John Doe",
   "/products": "Products",
@@ -291,4 +294,64 @@ export const createVariantPayload = (values) => {
     });
     return result;
   }
+};
+
+export const createVariantsData = (variants) => {
+  console.log(variants, "these are variants");
+  const result = [];
+  if (variants?.length) {
+    variants.forEach((curElem) => {
+      const item = {};
+      const directKeys = [
+        "allow_backorders",
+        "description",
+        "enabled",
+        "managed_stock",
+        "name",
+        "sku",
+      ];
+      const inventoryKeys = [
+        "regular_price",
+        "sale_price",
+        "sale_price_dates_from",
+        "sale_price_dates_to",
+        "sku",
+        "weight",
+        "bulking_price_rules",
+        "total_quantity",
+        "unit",
+      ];
+      directKeys.map((key) => {
+        if (key === "description") {
+          item[key] = extractTextFromParagraph(curElem[key]);
+        } else if (key === "allow_backorders") {
+          const extractedOption = extractOption(
+            BACKDOOR_OPTIONS,
+            "allow",
+            "value"
+          );
+          item[key] = extractedOption;
+        } else {
+          item[key] = curElem[key];
+        }
+      });
+      inventoryKeys.map((key) => {
+        if (key === "total_quantity") {
+          item["quantity"] = curElem?.inventory?.[key];
+        } else if (key === "unit") {
+          const extractedOption = extractOption(
+            MEASURE_OPTIONS,
+            curElem?.inventory?.[key],
+            "value"
+          );
+          item[key] = extractedOption;
+        } else {
+          item[key] = curElem?.inventory?.[key];
+        }
+      });
+      result.push(item);
+    });
+  }
+  console.log(result, "result");
+  return result;
 };

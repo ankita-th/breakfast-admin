@@ -13,6 +13,18 @@ export const getProducts = (filters) => {
   return authorizeAxios.get(GET_PRODUCT_ENDPOINT, { params: cleanedFilters });
 };
 
+export const bulkActionProduct = (payload) => {
+  const { status } = payload;
+  if (status === "delete") {
+    return authorizeAxios.delete("/bulk-product-update/", { data: payload });
+  } else if (status === "draft") {
+    return authorizeAxios.patch("/bulk-product-update/", payload);
+  } else if (status === "duplicate") {
+    delete payload?.status;
+    return authorizeAxios.post("/duplicate-product/", payload);
+  }
+};
+
 export const deleteProduct = (id) => {
   console.log("delete product id", id);
   return authorizeAxios.delete(`/products/${id}/`);

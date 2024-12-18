@@ -3,16 +3,20 @@ import { INSTANCE, makeApiRequest, METHODS } from "../api/apiFunctions";
 import { CATEGORIES_ENDPOINT } from "../api/endpoints";
 import AddEditCategorySection from "./AddEditCategorySection";
 import { useForm } from "react-hook-form";
-import { editIcon } from "../assets/Icons/Svg";
 import ErrorMessage from "./Common/ErrorMessage";
 import { successType, toastMessage } from "../utils/toastMessage";
 import { DEFAULT_ERROR_MESSAGE } from "../constant";
-
-const CategorySection = ({ formConfig, fieldName, rules }) => {
+import { T } from "../utils/languageTranslator";
+      
+const CategorySection = ({
+  formConfig,
+  fieldName,
+  rules,
+  isViewOnly = false,
+}) => {
   const [file, setFile] = useState();
   const {
     register,
-    watch,
     formState: { errors },
   } = formConfig;
   const categoryFormConfig = useForm();
@@ -66,7 +70,6 @@ const CategorySection = ({ formConfig, fieldName, rules }) => {
     }
 
     const data = Object.fromEntries(formData.entries()); // Convert to object
-    console.log(data, "recipe payload");
     makeApiRequest({
       endPoint: CATEGORIES_ENDPOINT,
       method: METHODS?.post,
@@ -76,44 +79,44 @@ const CategorySection = ({ formConfig, fieldName, rules }) => {
     })
       .then((res) => {
         setCategories((prev) => [...prev, res?.data]);
+        setBtnLoaders({ publish: false });
         toastMessage(`Category added sucessfully`, successType);
+        setShowCateoryAddSection(false);
+        reset();
+        setFile(null);
       })
       .catch((err) => {
-        toastMessage(handleCategoryErrorToast(err));
-      })
-      .finally(() => {
-        setShowCateoryAddSection(false);
-        handleReset();
+        const fieldError =
+          err?.response?.data?.name?.[0] || err?.response?.data?.slug?.[0];
+        if (fieldError) {
+          toastMessage(fieldError);
+        } else {
+          toastMessage(DEFAULT_ERROR_MESSAGE);
+          setShowCateoryAddSection(false);
+          reset();
+          setFile(null);
+        }
+        setBtnLoaders({ publish: false });
       });
   };
-  const handleReset = () => {
-    reset();
-    setFile(null);
-    setBtnLoaders({ publish: false });
-  };
-  const handleCategoryErrorToast = (err) => {
-    if (err?.response?.data?.name?.[0]) {
-      return err?.response?.data?.name?.[0];
-    } else if (err?.response?.data?.slug?.[0]) {
-      return err?.response?.data?.slug?.[0];
-    } else {
-      return DEFAULT_ERROR_MESSAGE;
-    }
-  };
+
   return (
     <div>
-      <div className="category-container">
+      <div className="category-container p-4">
         <div className="category-heading">
-          <h5>Categories</h5>
-          <span
-            onClick={() => {
-              setShowCateoryAddSection(true);
-            }}
-          >
-            +Add
-          </span>
+          <h5>{T["categories"]}</h5>
+          {!isViewOnly && (
+            <span
+              onClick={() => {
+                setShowCateoryAddSection(true);
+              }}
+              className="text-[#FF6D2F]"
+            >
+             {`+${T["add"]}`} 
+            </span>
+          )}
         </div>
-        <div className="catgoryListing">
+        <div className="catgoryListing mt-4">
           {categories?.length > 0 ? (
             categories.map(({ id, name }, index) => {
               return (
@@ -121,6 +124,7 @@ const CategorySection = ({ formConfig, fieldName, rules }) => {
                   <input
                     {...register(fieldName, rules)}
                     type="checkbox"
+                    disabled={isViewOnly}
                     value={id}
                   />
                   {name}

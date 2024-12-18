@@ -1,105 +1,140 @@
 import React, { useEffect, useState } from "react";
 import { INSTANCE, makeApiRequest, METHODS } from "../api/apiFunctions";
-import { CATEGORIES_ENDPOINT, GET_PRODUCT_ENDPOINT, PRODUCT_ENDPOINT } from "../api/endpoints";
-import { baseURL } from "../api/apiConfig";
+import { CATEGORIES_ENDPOINT, GET_PRODUCT_ENDPOINT } from "../api/endpoints";
 import basketImg from "../assets/images/cookie_img.png";
 import CommonButton from "../Components/Common/CommonButton";
 
-function AddEligibleProduct({ onClose, onSelect }) {
+function AddEligibleProduct({ onClose, onSelect, formConfig }) {
   const [productDetails, setProductDetails] = useState([]);
   const [sideBar, setSideBar] = useState(false);
   const [sideBarOptions, setSideBarOptions] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  // console.log(products, "products");
-  console.log(sideBarOptions, "sideBarOptions");
-  console.log(sideBar, "sideBar");
-  console.log(selectedCategory, "selectedCategory");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  console.log(formConfig, "kdjfkjdfjdfkfdjfformconfig");
+  const { watch } = formConfig;
+  console.log(watch(), "watchhshhdhdkhdhf");
+
+  // const dummyCategories = [
+  //   { id: 1, name: "Fruits" },
+  //   { id: 2, name: "Vegetables" },
+  //   { id: 3, name: "Dairy" },
+  //   { id: 4, name: "Bakery" },
+  // ];
+
+  // const dummyProducts = [
+  //   { id: 1, name: "Apple", category: "milk", price: 5, unit: "kg" },
+  //   { id: 2, name: "Banana", category: "Fruits", price: 2, unit: "kg" },
+  //   { id: 3, name: "Carrot", category: "Vegetables", price: 3, unit: "unit" },
+  //   { id: 4, name: "Milk", category: "Dairy", price: 4, unit: "kg" },
+  //   { id: 5, name: "Cheese", category: "Dairy", price: 8, unit: "unit" },
+  //   { id: 6, name: "Bread", category: "Bakery", price: 3, unit: "kg" },
+  //   { id: 7, name: "Cake", category: "Bakery", price: 10, unit: "unit" },
+  // ];
+
+  // useEffect(() => {
+  // Set dummy data for categories and products
+  // setProductDetails(dummyProducts);
+  // }, []);
+
+  const handleAllCategories = () => {
+    setSideBar((prev) => !prev); // Toggle sidebar state
+  };
+
+  const handleCategorySelection = (category) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((cat) => cat !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  // Filter products based on selected categories
+
+  console.log(selectedCategories, "sdkfjskdjfkdsljfkldsf");
+
+  const filteredProducts =
+    selectedCategories.length > 0
+      ? productDetails.filter((product) =>
+          selectedCategories.some((category) =>
+            product.category.some((item) => item.name === category)
+          )
+        )
+      : productDetails;
+
   useEffect(() => {
+    // Fetch products
     makeApiRequest({
       endPoint: GET_PRODUCT_ENDPOINT,
       method: METHODS.get,
     })
       .then((res) => {
-        console.log(res.data.results, "f");
-        setProductDetails(res.data.results);
+        console.log(res, "ddmkdskdskdsksdewaresponse------------");
+        setProductDetails(res.data);
       })
       .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {});
+        console.error(err);
+      });
+
+    // Fetch categories
     makeApiRequest({
       endPoint: CATEGORIES_ENDPOINT,
       method: METHODS.get,
     })
       .then((res) => {
-        console.log(res.data.results, "f");
+        console.log(res, "ddmkdskdskdsksdewaresponse");
         setSideBarOptions(res.data.results);
       })
       .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {});
+        console.error(err);
+      });
   }, []);
 
-  const handleAllCategories = () => {
-    console.log("All Categories");
-    setSideBar(true);
-  };
+  // const handleAllCategories = () => {
+  //   setSideBar((prev) => !prev); // Toggle sidebar state
+  // };
+
   // const handleSideBar = (category) => {
-  //   // setSideBar(true)
-  //   console.log("here")
-  //   setSelectedCategory(category)
-  // }
+  //   setSelectedCategory(category);
 
-  const handleSideBar = (category) => {
-    console.log(category, "category");
-    setSelectedCategory(category);
-    if (category === "All") {
-      makeApiRequest({
-        endPoint: GET_PRODUCT_ENDPOINT,
-        method: METHODS.get,
-        instanceType: INSTANCE.authorized,
-      })
-        .then((res) => {
-          console.log(res.data.results, "response");
-          setProductDetails(res.data.results);
-        })
-        .catch((err) => {
-          console.log(err, "err");
-          // toastMessages(err.message || DEFAULT_ERROR_MESSAGE);
-        });
-    } else {
-      makeApiRequest({
-        endPoint: "/products/categories-products/",
-        method: METHODS.get,
-        instanceType: INSTANCE.authorized,
-        params: {
-          page: "1",
-          category: category.name,
-        },
-      })
-        .then((res) => {
-          console.log(res.data.results, "response");
-          setProductDetails(res.data.results);
-        })
-        .catch((err) => {
-          console.log(err, "err");
-          // toastMessages(err.message || DEFAULT_ERROR_MESSAGE);
-        });
-    }
-  };
-
-  console.log(productDetails, "productDetails");
-
+  //   if (category === "All") {
+  //     makeApiRequest({
+  //       endPoint: GET_PRODUCT_ENDPOINT,
+  //       method: METHODS.get,
+  //       instanceType: INSTANCE.authorized,
+  //     })
+  //       .then((res) => {
+  //         setProductDetails(res.data.results);
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   } else {
+  //     makeApiRequest({
+  //       endPoint: "/products/categories-products/",
+  //       method: METHODS.get,
+  //       instanceType: INSTANCE.authorized,
+  //       params: {
+  //         page: "1",
+  //         category: category.name,
+  //       },
+  //     })
+  //       .then((res) => {
+  //         setProductDetails(res.data.results);
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   }
+  // };
 
   return (
     <div>
       <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg p-6 w-[800px] max-h-[80vh] overflow-y-auto">
+        <div className="bg-white rounded-lg p-6 w-[800px] max-h-[80vh] overflow-y-auto relative">
           {/* Modal Header */}
-
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Select Eligible Products</h2>
+          <div className="flex justify-end mb-4">
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700"
@@ -120,94 +155,117 @@ function AddEligibleProduct({ onClose, onSelect }) {
             </button>
           </div>
 
-          {/* Search Bar */}
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Search Product"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          {/* Search and Filter */}
+          <div className="flex justify-evenly gap-10 items-center">
+            <CommonButton
+              // text={sideBar ? "Close Sidebar" : "All Categories"}
+              text="All Categories"
+              onClick={handleAllCategories}
+              type="button"
+              className="px-4 py-2 bg-green-500 text-white rounded-md"
             />
+
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search Product"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
           </div>
 
-          {/* Filter Button */}
-          {/* <button className="mb-4 px-4 py-2 bg-green-500 text-white rounded-md" >
-            All Categories
-          </button> */}
+          <div className="flex justify-center mt-4">
+            <div className="bg-[#FFF6EE] w-48 flex justify-between py-1 px-3 rounded-full items-center">
+              <div className="text-nowrap">Available Space</div>
+              <div className="bg-[#F97316] rounded-full py-1 px-2">13</div>
+            </div>
+          </div>
 
-          <CommonButton
-            text="All Categories"
-            onClick={handleAllCategories}
-            type="button"
-            className="mb-4 px-4 py-2 bg-green-500 text-white rounded-md"
-          />
-
-          {sideBar && (
-            <aside className="w-[15rem] bg-[#ffffff] text-center rounded-lg mob-product-category flex-none">
-              <ul className="space-y-2 text-black border border-gray-300">
-                <li
-              className={
-                selectedCategory === "All"
-                  ? "bg-[#DFFFDC] text-left py-[10px] pl-[40px] text-[16px] font-medium"
-                  : "hover:text-green-600 cursor-pointer text-left py-[10px] pl-[40px] text-[16px] font-medium border border-[#C1C1C1] !mt-0"
-              }
-              onClick={() => handleSideBar("All")}
+          {/* Sidebar */}
+          {/* {sideBar && ( */}
+          <div
+            className={`absolute top-0 left-0 h-full w-60 bg-white shadow-lg transform ${
+              sideBar ? "translate-x-0" : "-translate-x-full"
+            } transition-transform duration-300 z-40`}
+          >
+            <div
+              className="flex justify-end pr-2 font-medium cursor-pointer"
+              onClick={handleAllCategories}
             >
-              All
-            </li>
-                {sideBarOptions?.map((category) => (
-                  <li
-                    key={category.id}
-                    className={
-                      selectedCategory?.name &&   selectedCategory?.name == category?.name
-                        ? "bg-[#DFFFDC] text-left py-[10px] pl-[40px] text-[16px] font-medium"
-                        : "hover:text-green-600 cursor-pointer text-left py-[10px] pl-[40px] text-[16px] font-medium border border-[#C1C1C1] !mt-0"
-                    }
-                    onClick={() => handleSideBar(category)}
-                  >
-                    {category.name}
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          )}
+              x
+            </div>
+            <div className="py-4 flex justify-center">Categories</div>
+            <ul className="space-y-2 text-black">
+              {sideBarOptions?.map((category) => (
+                <li
+                  key={category.id}
+                  className={`cursor-pointer text-left border-b py-4 pl-4 font-medium !mt-0 ${
+                    selectedCategories.includes(category.name)
+                      ? "bg-[#DFFFDC]"
+                      : "hover:text-green-600"
+                  }`}
+                  onClick={() => handleCategorySelection(category.name)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category.name)}
+                    readOnly
+                    className="mr-2"
+                  />
+                  {category.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* )} */}
 
           {/* Products Grid */}
           <div className="grid grid-cols-4 gap-4 mt-4">
-            {productDetails?.map((product) => (
+            {filteredProducts?.map((product) => (
               <div
                 key={product.id}
-                // onClick={() => handleProductSelect(product)}
-                //   className={`cursor-pointer rounded-lg border p-2 relative ${
-                //     selectedProducts.find(p => p.id === product.id)
-                //       ? 'border-green-500 bg-green-50'
-                //       : 'border-gray-200'
-                //   }`}
+                className="cursor-pointer shadow-md p-4 relative bg-white"
               >
-                <img
-                  // src={product.featured_image ? `${baseURL}${product.featured_image}` : basketImg}
-                  src={basketImg}
-                  alt={product.name}
-                  className="w-full h-32 object-cover rounded-md"
-                />
+                {/* Container for image and checkbox */}
+                <div className="relative">
+                  <img
+                    src={basketImg}
+                    alt={product.name}
+                    className="w-full h-32 rounded-md"
+                  />
+                  {/* Checkbox in the top-left corner */}
+                  <div className="absolute top-0 left-0">
+                    <input
+                      type="checkbox"
+                      className="cursor-pointer"
+                      // checked={selectedCategories.includes(product.category)}
+                      // onChange={() => handleCategorySelection(product.category)}
+                    />
+                  </div>
+                </div>
                 <div className="mt-2">
-                  <h3 className="font-medium text-sm">{product.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    ${product?.product_detail?.variants[0]?.regular_price}kg
-                  </p>
+                  <div className="flex justify-center">
+                    <div className="font-medium text-sm">{product.name}</div>
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="text-sm text-gray-600">
+                      ${product.price}.00 {product.unit}
+                    </div>
+                  </div>
+                  {/* <div className="bg-[#F2FFEC] w-full flex justify-between py-1 px-3 rounded-full items-center">
+                    <div className="text-nowrap text-xs">Space Occupy</div>
+                    <div className="bg-[#4BAF50] rounded-full py-1 px-2 text-xs">
+                      1
+                    </div>
+                  </div> */}
                 </div>
-                {/* {selectedProducts.find(p => p.id === product.id) && ( */}
-                <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                  </svg>
-                </div>
-                {/* )} */}
               </div>
             ))}
+          </div>
+          <div className="mt-4 flex justify-center">
+            <button className="orange_btn" type="button">
+              Submit
+            </button>
           </div>
         </div>
       </div>
