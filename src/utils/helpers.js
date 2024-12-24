@@ -307,6 +307,7 @@ export const createVariantsData = (variants) => {
         "description",
         "enabled",
         "managed_stock",
+        "is_premium",
         "name",
         "sku",
       ];

@@ -123,6 +123,15 @@ const VariantsTab = ({ formConfig, disabled }) => {
                       errors?.["variants"]?.[index]?.["managed_stock"]?.message
                     }
                   />
+                  <Checkbox
+                    fieldName={`variants.${index}.is_premium`}
+                    label="Premium"
+                    disabled={disabled}
+                    formConfig={formConfig}
+                    // customError={
+                    //   errors?.["variants"]?.[index]?.["managed_stock"]?.message
+                    // }
+                  />
                 </div>
 
                 <div className="mb-6 flex-1 w-4/5 space-y-4">
